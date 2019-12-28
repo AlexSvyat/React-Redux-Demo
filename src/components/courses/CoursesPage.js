@@ -1,22 +1,25 @@
 import React from "react";
 import { connect } from "react-redux";
-import * as courseActions from "../../redux/actions/courseActions";
-import * as authorActions from "../../redux/actions/authorActions";
-import { bindActionCreators } from "redux";
+import { loadCourses } from "../../redux/actions/courseActions";
+import { loadAuthors } from "../../redux/actions/authorActions";
 import CourseList from "./CourseList";
+import { Redirect } from "react-router-dom";
 
 class CoursesPage extends React.Component {
+  state = {
+    redirectToAddCoursePage: false
+  };
   componentDidMount() {
-    const { courses, authors, actions } = this.props;
+    const { courses, authors, loadCourses, loadAuthors } = this.props;
 
     if (courses.length === 0) {
-      actions.loadCourses().catch(error => {
+      loadCourses().catch(error => {
         alert("Error loading courses: " + error);
       });
     }
 
     if (authors.length === 0) {
-      actions.loadAuthors().catch(error => {
+      loadAuthors().catch(error => {
         alert("Error loading authors: " + error);
       });
     }
@@ -25,7 +28,17 @@ class CoursesPage extends React.Component {
   render() {
     return (
       <>
+        {this.state.redirectToAddCoursePage && <Redirect to="/course" />}
         <h2>Courses:</h2>
+
+        <button
+          style={{ marginBottom: 20 }}
+          className="btn btn-primary add-course"
+          onClick={() => this.setState({ redirectToAddCoursePage: true })}
+        >
+          Add Course
+        </button>
+
         <CourseList courses={this.props.courses} />
       </>
     );
@@ -51,16 +64,12 @@ function mapStateToProps(state) {
   };
 }
 
-// This Redux function determines what actions
+// This Redux function/object determines what actions
 // are available on props in our component
-function mapDispatchToProps(dispatch) {
-  return {
-    actions: {
-      loadCourses: bindActionCreators(courseActions.loadCourses, dispatch),
-      loadAuthors: bindActionCreators(authorActions.loadAuthors, dispatch)
-    }
-  };
-}
+const mapDispatchToProps = {
+  loadCourses,
+  loadAuthors
+};
 
 // Connect to Redux Store
 export default connect(mapStateToProps, mapDispatchToProps)(CoursesPage);
