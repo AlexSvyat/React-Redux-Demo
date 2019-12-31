@@ -1,9 +1,11 @@
 import React from "react";
 import { connect } from "react-redux";
-import { loadCourses } from "../../redux/actions/courseActions";
+import { loadCourses, deleteCourse } from "../../redux/actions/courseActions";
 import { loadAuthors } from "../../redux/actions/authorActions";
 import CourseList from "./CourseList";
 import { Redirect } from "react-router-dom";
+import Spinner from "../common/Spinner";
+import { toast } from "react-toastify";
 
 class CoursesPage extends React.Component {
   state = {
@@ -25,21 +27,41 @@ class CoursesPage extends React.Component {
     }
   }
 
+  // Handler to  deal with Course Deletion
+  // To be passed to Course List component
+  handleDeleteCourse = course => {
+    toast.success("Course deleted");
+    this.props.deleteCourse(course).catch(error => {
+      toast.error(
+        "Failed to delete a course '" + course.title + "'! " + error.message,
+        { autoClose: false }
+      );
+    });
+  };
+
   render() {
     return (
       <>
         {this.state.redirectToAddCoursePage && <Redirect to="/course" />}
         <h2>Courses:</h2>
+        {this.props.loading ? (
+          <Spinner />
+        ) : (
+          <>
+            <button
+              style={{ marginBottom: 20 }}
+              className="btn btn-primary add-course"
+              onClick={() => this.setState({ redirectToAddCoursePage: true })}
+            >
+              Add Course
+            </button>
 
-        <button
-          style={{ marginBottom: 20 }}
-          className="btn btn-primary add-course"
-          onClick={() => this.setState({ redirectToAddCoursePage: true })}
-        >
-          Add Course
-        </button>
-
-        <CourseList courses={this.props.courses} />
+            <CourseList
+              onDeleteClick={this.handleDeleteCourse}
+              courses={this.props.courses}
+            />
+          </>
+        )}
       </>
     );
   }
@@ -60,7 +82,10 @@ function mapStateToProps(state) {
               authorName: state.authors.find(a => a.id === course.authorId).name
             };
           }),
-    authors: state.authors
+    authors: state.authors,
+
+    // A prop to determine if API Call in Progress to show a Spinner
+    loading: state.apiCallsInProgress > 0
   };
 }
 
@@ -68,7 +93,8 @@ function mapStateToProps(state) {
 // are available on props in our component
 const mapDispatchToProps = {
   loadCourses,
-  loadAuthors
+  loadAuthors,
+  deleteCourse
 };
 
 // Connect to Redux Store

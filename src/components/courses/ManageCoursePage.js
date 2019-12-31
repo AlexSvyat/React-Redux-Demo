@@ -4,6 +4,8 @@ import { loadCourses, saveCourse } from "../../redux/actions/courseActions";
 import { loadAuthors } from "../../redux/actions/authorActions";
 import CourseForm from "./CourseForm";
 import { newCourse } from "./DataModel";
+import Spinner from "../common/Spinner";
+import { toast } from "react-toastify";
 
 function ManageCoursePage({
   courses,
@@ -16,6 +18,7 @@ function ManageCoursePage({
 }) {
   const [course, setCourse] = useState({ ...props.course });
   const [errors, setErrors] = useState({});
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (courses.length === 0) {
@@ -35,16 +38,49 @@ function ManageCoursePage({
     }
   }, [props.course]);
 
+  // Function to validate Course Form and provide instant
+  // validation errors to a user
+  function formIsValid() {
+    const { title, authorId, category } = course;
+    const error = {};
+
+    if (!title) error.title = "Title is required!";
+    if (!authorId) error.author = "Author is required!";
+    if (!category) error.category = "Category is required!";
+
+    setErrors(error);
+
+    // Form is valid if the error object still has no properties
+    return Object.keys(error).length === 0;
+  }
+
   // Function to be passed to CourseForm component
   // to handle Saving of the course into Redux Store
   function handleSave(event) {
     event.preventDefault();
 
-    // We're using React Router's history object to redirect
-    // For redirection we can use <Redirect> or history to redirect
-    saveCourse(course).then(() => {
-      history.push("/courses");
-    });
+    // Let's run Client Side validation on the Form values
+    if (!formIsValid()) return;
+
+    // Set local state var to indicate that Saving started
+    setSaving(true);
+
+    saveCourse(course)
+      .then(() => {
+        // To show Toast notification to a user
+        toast.success("Course saved.");
+
+        // We're using React Router's history object to redirect
+        // For redirection we can use <Redirect> or history to redirect
+        history.push("/courses");
+      })
+      .catch(error => {
+        // Resetting Save button back to false, for user to retry
+        setSaving(false);
+
+        // Returning error message in a CourseForm Error Div
+        setErrors({ onSave: error.message });
+      });
   }
 
   // Function to be passed to CourseForm component
@@ -61,13 +97,16 @@ function ManageCoursePage({
       [name]: name === "authorId" ? parseInt(value, 10) : value
     }));
   }
-  return (
+  return (authors.length === 0) | (courses.length === 0) ? (
+    <Spinner />
+  ) : (
     <CourseForm
       course={course}
       errors={errors}
       authors={authors}
       onChange={handleChange}
       onSave={handleSave}
+      saving={saving}
     />
   );
 }

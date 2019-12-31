@@ -1,4 +1,6 @@
+// Initial Redux State
 export default {
   courses: [],
-  authors: []
+  authors: [],
+  apiCallsInProgress: 0
 };
