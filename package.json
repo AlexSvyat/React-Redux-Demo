@@ -3,12 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.4.0",
-    "@testing-library/user-event": "^7.1.2",
     "bootstrap": "^4.4.1",
     "env-cmd": "^10.0.1",
-    "json-server": "^0.15.1",
     "npm-run-all": "^4.1.5",
     "react": "^16.12.0",
     "react-bootstrap": "^1.0.0-beta.16",
@@ -28,8 +24,22 @@
     "start:api": "node tools/apiServer.js",
     "start:dev": "env-cmd -f ./.env react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "jest",
+    "test:watch": "npm test -- --watch",
+    "json-server": "^0.15.1",
     "eject": "react-scripts eject"
+  },
+  "jest": {
+    "setupFilesAfterEnv": [
+      "./unit_tests/testSetup.js"
+    ],
+    "setupFiles": [
+      "<rootDir>/node_modules/regenerator-runtime/runtime"
+    ],
+    "moduleNameMapper": {
+      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/unit_tests/fileMock.js",
+      "\\.(css|less)$": "<rootDir>/unit_tests/styleMock.js"
+    }
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -47,6 +57,18 @@
     ]
   },
   "devDependencies": {
-    "redux-immutable-state-invariant": "^2.1.0"
+    "@babel/preset-env": "^7.7.7",
+    "@testing-library/react": "^9.4.0",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.2",
+    "fetch-mock": "^8.3.1",
+    "jest": "^24.9.0",
+    "json-server": "^0.15.1",
+    "node-fetch": "^2.6.0",
+    "react-test-renderer": "^16.12.0",
+    "redux-immutable-state-invariant": "^2.1.0",
+    "redux-mock-store": "^1.5.4",
+    "regenerator-runtime": "^0.13.3"
   }
 }

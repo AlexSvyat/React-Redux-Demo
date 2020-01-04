@@ -7,7 +7,8 @@ import { newCourse } from "./DataModel";
 import Spinner from "../common/Spinner";
 import { toast } from "react-toastify";
 
-function ManageCoursePage({
+// Exporting un-connected version for Unit Testing
+export function ManageCoursePage({
   courses,
   authors,
   loadAuthors,
@@ -143,5 +144,6 @@ const mapDispatchToProps = {
   saveCourse
 };
 
+// Exporting Connected Version to be used in App
 // Connect to Redux Store
 export default connect(mapStateToProps, mapDispatchToProps)(ManageCoursePage);
