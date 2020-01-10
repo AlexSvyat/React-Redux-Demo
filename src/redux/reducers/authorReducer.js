@@ -7,6 +7,14 @@ export default function authorReducer(state = initialState.authors, action) {
       return action.authors;
     case types.DELETE_AUTHOR_OPTIMISTIC:
       return state.filter(author => author.id !== action.author.id);
+    case types.UPDATE_AUTHOR_SUCCESS:
+      // Map return a new array. We're replacing the element
+      // with mathcing author.id
+      return state.map(author =>
+        author.id === action.author.id ? action.author : author
+      );
+    case types.CREATE_AUTHOR_SUCCESS:
+      return [...state, { ...action.author }];
     default:
       return state;
   }

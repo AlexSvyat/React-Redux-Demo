@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { loadCourses, saveCourse } from "../../redux/actions/courseActions";
 import { loadAuthors } from "../../redux/actions/authorActions";
 import CourseForm from "./CourseForm";
-import { newCourse } from "./DataModel";
+import { newCourse } from "../common/DataModel";
 import Spinner from "../common/Spinner";
 import { toast } from "react-toastify";
 

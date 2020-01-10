@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-const AuthorList = ({ authors, coursesCount, onDeleteClick }) => (
+const AuthorList = ({ authors, onDeleteClick }) => (
   <table className="table">
     <thead>
       <tr>
@@ -17,9 +17,10 @@ const AuthorList = ({ authors, coursesCount, onDeleteClick }) => (
             <td>
               <Link to={"/author/" + author.name}>{author.name}</Link>
             </td>
-            <td>{coursesCount}</td>
+            <td>{author.coursesCount}</td>
             <td>
               <button
+                disabled={author.coursesCount > 0}
                 className="btn btn-outline-danger"
                 onClick={() => onDeleteClick(author)}
               >

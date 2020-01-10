@@ -9,6 +9,15 @@ export function loadAuthorsSuccess(authors) {
 export function deleteAuthorOptimistic(author) {
   return { type: types.DELETE_AUTHOR_OPTIMISTIC, author };
 }
+
+export function updateAuthorSuccess(author) {
+  return { type: types.UPDATE_AUTHOR_SUCCESS, author };
+}
+
+export function createAuthorSuccess(author) {
+  return { type: types.CREATE_AUTHOR_SUCCESS, author };
+}
+
 export function loadAuthors() {
   return function(dispatch) {
     dispatch(beginApiCall());
@@ -31,5 +40,23 @@ export function deleteAuthor(author) {
     // actions, or apiCallError action since we're not showing the loading status for this.
     dispatch(deleteAuthorOptimistic(author));
     return authorApi.deleteAuthor(author.id);
+  };
+}
+
+export function saveAuthor(author) {
+  return function(dispatch, getState) {
+    dispatch(beginApiCall());
+    return authorApi
+      .saveAuthor(author)
+      .then(saveAuthor => {
+        author.id
+          ? dispatch(updateAuthorSuccess(saveAuthor))
+          : dispatch(createAuthorSuccess(saveAuthor));
+      })
+      .catch(error => {
+        // To handle error state in Redux Store
+        dispatch(apiCallError());
+        throw error;
+      });
   };
 }
